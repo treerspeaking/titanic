@@ -7,6 +7,7 @@ from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
 import warnings
 import os
+from genetic_utils import get_genetic_feature
 
 warnings.filterwarnings('ignore')
 
@@ -58,7 +59,10 @@ def preprocess(train_df, test_df):
     # 1. Family Survival
     all_data = get_family_survival_feature(all_data)
 
-    # 2. Imputation
+    # 2. Genetic Feature
+    all_data['Genetic_Score'] = get_genetic_feature(all_data)
+
+    # 3. Imputation
     all_data['Age'] = all_data['Age'].fillna(all_data['Age'].median())
     all_data['Embarked'] = all_data['Embarked'].fillna(all_data['Embarked'].mode()[0])
     all_data['Fare'] = all_data['Fare'].fillna(all_data['Fare'].median())
@@ -87,7 +91,7 @@ def preprocess(train_df, test_df):
     # Features
     features = ['Sex_Code', 'Pclass', 'Embarked_Code', 'Title_Code',
                 'FamilySize', 'AgeBin_Code', 'FareBin_Code',
-                'Family_Survival']
+                'Family_Survival', 'Genetic_Score']
 
     X_train = all_data[:ntrain][features]
     X_test = all_data[ntrain:][features]
